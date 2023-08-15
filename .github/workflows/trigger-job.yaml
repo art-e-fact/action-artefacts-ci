@@ -23,7 +23,7 @@ jobs:
         
     - name: Install Artefacts Client
       run: |
-        git clone https://github.com/art-e-fact/artefacts-client.git
+        gh repo clone art-e-fact/artefacts-client
         cd artefacts-client
         pip install --editable .
 
