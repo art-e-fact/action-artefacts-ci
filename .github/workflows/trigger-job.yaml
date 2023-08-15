@@ -1,0 +1,28 @@
+name: Trigger Artefacts job
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-job:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]  
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set Up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install Artefacts Client
+      run: |
+        git clone https://github.com/art-e-fact/artefacts-client.git
+        cd artefacts-client
+        pip install --editable .
+
+
