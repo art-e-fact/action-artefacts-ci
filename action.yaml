@@ -19,7 +19,7 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        ARTEFACTS_KEY=${{ inputs.artefacts_api_key }} artefacts run-remote command ${{ inputs.job_name }}
+        ARTEFACTS_KEY=${{ inputs.artefacts_api_key }} artefacts run-remote ${{ inputs.job_name }}
         if [ ${{ steps.run-job.exitcode }} -eq 0 ]; then
           echo "Simulation job succeeded"
         else
