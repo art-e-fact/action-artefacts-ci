@@ -2,10 +2,10 @@ name: 'artefacts-ci'
 description: 'Run Simulation Job using Artefacts'
 
 inputs:
-  artefacts_api_key:
+  artefacts-api-key:
     description: 'Artefacts API Key'
     required: true
-  job_name:
+  job-name:
     description: 'Name of the job to execute'
     required: true
 
@@ -19,5 +19,5 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        ARTEFACTS_KEY=${{ inputs.artefacts_api_key }} artefacts run-remote ${{ inputs.job_name }}
+        ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }}
       shell: bash
