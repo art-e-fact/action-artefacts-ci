@@ -11,7 +11,19 @@ inputs:
 
 runs:
   using: "composite"
+  
   steps:
+    - name: Ros 2 CI
+    - uses: ros-tooling/setup-ros@v0.6
+          with:
+            required-ros-distributions: humble
+        - uses: ros-tooling/action-ros-ci@v0.3
+          with:
+            import-token: ${{ secrets.GITHUB_TOKEN }}
+            package-name: dolly_tests
+            target-ros2-distro: humble
+            skip-tests: true
+
     - name: Install artefacts client
       run: pip install artefacts-client --extra-index-url https://d5cw4z7oemmfd.cloudfront.net/pep503/
       shell: bash
