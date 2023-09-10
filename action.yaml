@@ -9,8 +9,8 @@ inputs:
     description: 'Name of the job to execute'
     required: true
   config-file:
-    description: 'Name of the configuration file. Defaults to "artefacts.yaml'
-    required: false
+    description: 'Name of the configuration file.'
+    default: 'artefacts.yaml'
 
 runs:
   using: "composite"
@@ -22,5 +22,5 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }}${{ if inputs.config-file }} --config ${{ inputs.config-file }}{{ endif }}
+        ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }}
       shell: bash
