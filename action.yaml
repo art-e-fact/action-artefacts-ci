@@ -11,6 +11,10 @@ inputs:
   config-file:
     description: 'Name of the configuration file.'
     default: 'artefacts.yaml'
+  working-dir:
+    description: 'Working dir containing '
+    required: false
+    default: "."
 
 runs:
   using: "composite"
@@ -22,5 +26,5 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }}
+        cd ${{inputs.working-dir}} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }}
       shell: bash
