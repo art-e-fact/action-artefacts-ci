@@ -27,6 +27,7 @@ jobs:
     env:
       ROS_DISTRO: humble
     steps:
+        - uses: actions/checkout@v3
         - uses: ros-tooling/setup-ros@v0.6
           with:
             required-ros-distributions: ${{ env.ROS_DISTRO }}
