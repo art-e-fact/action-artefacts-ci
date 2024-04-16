@@ -47,7 +47,8 @@ jobs:
         with:
           artefacts-api-key: ${{ secrets.ARTEFACTS_API_KEY }}
           job-name: basic_tests
-          description: ${{ github.event.head_commit.message || github.event.pull_request.head.commit.message }} # If you prefer to see the commit name instead of the workflow name.
+          # If you prefer to see the commit name instead of the workflow name.
+          description: ${{ github.event.head_commit.message }}
 ```
 
 
