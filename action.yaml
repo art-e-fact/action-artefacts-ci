@@ -14,6 +14,7 @@ inputs:
   description:
     description: "Additional information for the commit"
     required: false
+    default: "Artefacts CI"
   working-dir:
     description: "Working dir containing "
     required: false
@@ -29,6 +30,5 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} \
-        $(if [ -n "${{ inputs.description }}" ]; then echo "--description \"${{ inputs.description }}\""; fi)
+        cd ${{inputs.working-dir}} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "${{ inputs.description }}"
       shell: bash
