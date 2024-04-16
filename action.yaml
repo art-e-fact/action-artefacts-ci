@@ -29,5 +29,6 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        cd ${{inputs.working-dir}} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "${{ inputs.description }}"
+        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} \
+        $(if [ -n "${{ inputs.description }}" ]; then echo "--description \"${{ inputs.description }}\""; fi)
       shell: bash
