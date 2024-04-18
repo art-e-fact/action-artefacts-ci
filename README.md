@@ -47,8 +47,8 @@ jobs:
         with:
           artefacts-api-key: ${{ secrets.ARTEFACTS_API_KEY }}
           job-name: basic_tests
-          # If you prefer a commit (or custom) name instead "Artefacts CI" in the platform.
-          description: ${{ github.event.head_commit.message }}
+          # If you prefer a custom name in the platform instead of the commit.
+          description: "Custom name"
 ```
 
 

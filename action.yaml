@@ -14,7 +14,7 @@ inputs:
   description:
     description: "Additional information for the commit"
     required: false
-    default: "Artefacts CI"
+    default: "${{ github.event.head_commit.message }}"
   working-dir:
     description: "Working dir containing "
     required: false
