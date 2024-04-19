@@ -1,18 +1,22 @@
-name: 'artefacts-ci'
-description: 'Run Simulation Job using Artefacts'
+name: "artefacts-ci"
+description: "Run Simulation Job using Artefacts"
 
 inputs:
   artefacts-api-key:
-    description: 'Artefacts API Key'
+    description: "Artefacts API Key"
     required: true
   job-name:
-    description: 'Name of the job to execute'
+    description: "Name of the job to execute"
     required: true
   config-file:
-    description: 'Name of the configuration file.'
-    default: 'artefacts.yaml'
+    description: "Name of the configuration file."
+    default: "artefacts.yaml"
+  description:
+    description: "Additional information for the commit"
+    required: false
+    default: "${{ github.event.head_commit.message }}"
   working-dir:
-    description: 'Working dir containing '
+    description: "Working dir containing "
     required: false
     default: "."
 
@@ -26,5 +30,5 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        cd ${{inputs.working-dir}} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }}
+        cd ${{inputs.working-dir}} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "${{ inputs.description }}"
       shell: bash
