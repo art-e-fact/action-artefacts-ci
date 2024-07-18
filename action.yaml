@@ -24,7 +24,8 @@ runs:
   using: "composite"
   steps:
     - name: Install artefacts client
-      run: pip install artefacts-client --extra-index-url https://d5cw4z7oemmfd.cloudfront.net/pep503/
+      run: pip install artefacts-client --extra-index-url https://d5cw4z7oemmfd.cloudfront.net/pep503/ -q
+      shell: bash
       shell: bash
 
     - name: Run remote job
