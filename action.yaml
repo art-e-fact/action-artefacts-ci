@@ -47,6 +47,16 @@ runs:
       run: |
         cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} ARTEFACTS_API_URL=${{ inputs.artefacts-url-api }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "$DESCRIPTION"
       shell: bash
+
+    - name: Wait for platform to register the job
+      run: sleep 60
+      shell: bash
+
+    - name: Extract project name from artefacts.yaml
+      id: extract-project-name
+      run: |
+        project_name=$(awk '/^project:/ {print $2}' ${{ inputs.config-file }})
+        echo "PROJECT_NAME=${project_name}" >> $GITHUB_ENV
       shell: bash
 
       shell: bash
