@@ -15,6 +15,10 @@ inputs:
     description: "Additional information for the commit"
     required: false
     default: "Artefacts CI check"
+  artefacts-url-api:
+    description: "Artefacts API URL"
+    required: false
+    default: "https://app.artefacts.com/api"
   working-dir:
     description: "Working dir containing"
     required: false
@@ -41,7 +45,8 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} ARTEFACTS_API_URL=${{ secrets.ARTEFACTS_URL_API }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "$DESCRIPTION"
+        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} ARTEFACTS_API_URL=${{ inputs.artefacts-url-api }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "$DESCRIPTION"
+      shell: bash
       shell: bash
 
       shell: bash
