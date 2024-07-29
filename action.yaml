@@ -63,38 +63,31 @@ runs:
         cmd: project_name=$(yq e '.project' ${{ inputs.config-file }}) && echo "PROJECT_NAME=${project_name}" >> $GITHUB_ENV
 
     - name: Check job status
+      if: inputs.wait_for_results == 'true'
       id: check-job
       run: |
-        if [ "${{ inputs.wait_for_results }}" = "true" ]; then
-          project_id=${{ env.PROJECT_NAME }}
-          commit_id=${{ github.sha }}
-          api_url="${{ inputs.artefacts-url-api }}/${project_id}/${commit_id}/job-status"
-          job_status="in progress"
-
-          while [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; do
-            response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" "$api_url")
-            body=$(echo $response | sed -e 's/HTTPSTATUS\:.*//g')
-            status_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-
-            if [ $status_code -eq 200 ]; then
-              job_status=$(echo $body | awk -F'"' '/status/ {print $4}')
-            else
-              echo "Error: API request failed with status $status_code"
-              exit 1
-            fi
-
-            if [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; then
-              sleep 5  # Wait for 5 seconds before checking again
-            fi
-          done
-
-          if [ "$job_status" == "success" ]; then
-            echo "Job completed successfully."
+        project_id=${{ env.PROJECT_NAME }}
+        commit_id=${{ github.sha }}
+        api_url="${{ inputs.artefacts-url-api }}/${project_id}/${commit_id}/job-status"
+        job_status="in progress"
+        while [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; do
+          response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" "$api_url")
+          body=$(echo $response | sed -e 's/HTTPSTATUS\:.*//g')
+          status_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+          if [ $status_code -eq 200 ]; then
+            job_status=$(echo $body | awk -F'"' '/status/ {print $4}')
           else
-            echo "Job failed."
+            echo "Error: API request failed with status $status_code"
             exit 1
           fi
+          if [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; then
+            sleep 5  # Wait for 5 seconds before checking again
+          fi
+        done
+        if [ "$job_status" == "success" ]; then
+          echo "Job completed successfully."
         else
-          echo "Skipping job status check as 'wait_for_results' is false."
+          echo "Job failed."
+          exit 1
         fi
       shell: bash
