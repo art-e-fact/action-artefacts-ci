@@ -54,10 +54,9 @@ runs:
 
     - name: Extract project name from artefacts.yaml
       id: extract-project-name
-      run: |
-        project_name=$(awk '/^project:/ {print $2}' ${{ inputs.config-file }})
-        echo "PROJECT_NAME=${project_name}" >> $GITHUB_ENV
-      shell: bash
+      uses: mikefarah/yq@master
+      with:
+        cmd: project_name=$(yq e '.project' ${{ inputs.config-file }}) && echo "PROJECT_NAME=${project_name}" >> $GITHUB_ENV
 
     - name: Check job status
       id: check-job
