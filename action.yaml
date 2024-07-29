@@ -23,6 +23,10 @@ inputs:
     description: "Working dir containing"
     required: false
     default: "."
+  wait_for_results:
+    description: "Wait for the job to check the job result before finishing the action. (Consumes more GH action time)"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -61,6 +65,7 @@ runs:
     - name: Check job status
       id: check-job
       run: |
+      if [ "${{ inputs.wait_for_results }}" = "true" ]; then
         project_id=${{ env.PROJECT_NAME }}
         commit_id=${{ github.sha }}
         api_url="${{ inputs.artefacts-url-api }}/${project_id}/${commit_id}/job-status"
@@ -89,4 +94,7 @@ runs:
           echo "Job failed."
           exit 1
         fi
-      shell: bash
+      else
+        echo "Skipping job status check as 'wait_for_results' is false."
+      fi
+    shell: bash
