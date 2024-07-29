@@ -49,7 +49,7 @@ runs:
     - name: Run remote job
       id: run-job
       run: |
-        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} ARTEFACTS_API_URL=${{ inputs.artefacts-url-api }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "$DESCRIPTION"
+        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} ARTEFACTS_API_URL=${{ inputs.artefacts-api-url }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "$DESCRIPTION"
       shell: bash
 
     - name: Wait for platform to register the job
