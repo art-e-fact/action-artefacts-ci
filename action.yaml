@@ -14,21 +14,80 @@ inputs:
   description:
     description: "Additional information for the commit"
     required: false
-    default: "${{ github.event.head_commit.message }}"
+    default: "Artefacts CI check"
+  artefacts-api-url:
+    description: "Artefacts API URL"
+    required: false
+    default: "https://app.artefacts.com/api"
   working-dir:
-    description: "Working dir containing "
+    description: "Working dir containing"
     required: false
     default: "."
+  wait_for_results:
+    description: "Wait for the job to check the job result before finishing the action. (Consumes more GH action time)"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
   steps:
     - name: Install artefacts client
-      run: pip install artefacts-client --extra-index-url https://d5cw4z7oemmfd.cloudfront.net/pep503/
+      run: pip install artefacts-client --extra-index-url https://d5cw4z7oemmfd.cloudfront.net/pep503/ -q
+      shell: bash
+
+    - name: Set commit description
+      id: set-description
+      run: |
+        if [ -n "${{ github.event.head_commit.message }}" ]; then
+          description="${{ github.event.head_commit.message }}"
+        else
+          description="${{ inputs.description }}"
+        fi
+        echo "DESCRIPTION=$description" >> $GITHUB_ENV
       shell: bash
 
     - name: Run remote job
       id: run-job
       run: |
-        cd ${{inputs.working-dir}} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "${{ inputs.description }}"
+        cd ${{ inputs.working-dir }} && ARTEFACTS_KEY=${{ inputs.artefacts-api-key }} ARTEFACTS_API_URL=${{ inputs.artefacts-api-url }} artefacts run-remote ${{ inputs.job-name }} --config ${{ inputs.config-file }} --description "$DESCRIPTION"
+      shell: bash
+
+    - name: Wait for platform to register the job
+      run: sleep 60
+      shell: bash
+
+    - name: Extract project name from artefacts.yaml
+      id: extract-project-name
+      uses: mikefarah/yq@master
+      with:
+        cmd: project_name=$(yq e '.project' ${{ inputs.config-file }}) && echo "PROJECT_NAME=${project_name}" >> $GITHUB_ENV
+
+    - name: Check job status
+      if: inputs.wait_for_results == 'true'
+      id: check-job
+      run: |
+        project_id=${{ env.PROJECT_NAME }}
+        commit_id=${{ github.sha }}
+        api_url="${{ inputs.artefacts-url-api }}/${project_id}/${commit_id}/job-status"
+        job_status="in progress"
+        while [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; do
+          response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" "$api_url")
+          body=$(echo $response | sed -e 's/HTTPSTATUS\:.*//g')
+          status_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+          if [ $status_code -eq 200 ]; then
+            job_status=$(echo $body | awk -F'"' '/status/ {print $4}')
+          else
+            echo "Error: API request failed with status $status_code"
+            exit 1
+          fi
+          if [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; then
+            sleep 5  # Wait for 5 seconds before checking again
+          fi
+        done
+        if [ "$job_status" == "success" ]; then
+          echo "Job completed successfully."
+        else
+          echo "Job failed."
+          exit 1
+        fi
       shell: bash
