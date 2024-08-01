@@ -39,8 +39,8 @@ runs:
       id: set-description
       run: |
         if [ -n "${{ github.event.head_commit.message }}" ]; then
-          # Use yq to check for squash merge and extract description
-          description=$(echo "${{ github.event.head_commit.message }}" | yq e 'select(contains("*")) | split("\n")[0] // .')
+          # Use yq to extract the first line of the commit message
+          description=$(echo "${{ github.event.head_commit.message }}" | yq e 'split("\n")[0]')
         else
           description="${{ inputs.description }}"
         fi
