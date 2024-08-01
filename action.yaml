@@ -39,11 +39,14 @@ runs:
       id: set-description
       run: |
         if [ -n "${{ github.event.head_commit.message }}" ]; then
-          description="${{ github.event.head_commit.message }}"
+          # Use yq to extract the first line of the commit message
+          description=$(echo "${{ github.event.head_commit.message }}" | yq e 'split("\n")[0]')
         else
           description="${{ inputs.description }}"
         fi
-        echo "DESCRIPTION=$description" >> $GITHUB_ENV
+        echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
+        echo "$description" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
       shell: bash
 
     - name: Run remote job
