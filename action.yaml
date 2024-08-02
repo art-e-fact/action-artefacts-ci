@@ -66,12 +66,12 @@ runs:
         cmd: project_name=$(yq e '.project' ${{ inputs.config-file }}) && echo "PROJECT_NAME=${project_name}" >> $GITHUB_ENV
 
     - name: Check job status
-      if: inputs.wait_for_results == 'true'
+      if: ${{ inputs.wait_for_results == 'true' }}
       id: check-job
       run: |
         project_id=${{ env.PROJECT_NAME }}
         commit_id=${{ github.sha }}
-        api_url="${{ inputs.artefacts-url-api }}/${project_id}/${commit_id}/job-status"
+        api_url="${{ inputs.artefacts-api-url }}/${project_id}/${commit_id}/job-status"
         job_status="in progress"
         while [ "$job_status" != "success" ] && [ "$job_status" != "failed" ]; do
           response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" "$api_url")
