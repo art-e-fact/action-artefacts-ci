@@ -38,15 +38,16 @@ runs:
     - name: Set commit description
       id: set-description
       run: |
+        # Check if there is a commit message
         if [ -n "${{ github.event.head_commit.message }}" ]; then
-          # Use yq to extract the first line of the commit message
-          description=$(echo "${{ github.event.head_commit.message }}" | yq e 'split("\n")[0]')
+          # Extract the first line of the commit message
+          description=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p')
         else
-          description="${{ inputs.description }}"
+          # Default description if no commit message is available (Or manual trigger)
+          description="Artefacts CI check"
         fi
-        echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
-        echo "$description" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
+        # Output the description to the GitHub environment
+        echo "DESCRIPTION=${description//[$'\t\r\n']/ }" >> $GITHUB_ENV
       shell: bash
 
     - name: Run remote job
