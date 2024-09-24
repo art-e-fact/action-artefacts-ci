@@ -32,7 +32,7 @@ runs:
   using: "composite"
   steps:
     - name: Install artefacts client
-      run: pip install artefacts-cli -q
+      run: pip install artefacts-cli
       shell: bash
 
     - name: Set commit description
