@@ -38,11 +38,9 @@ runs:
     - name: Set commit description
       id: set-description
       run: |
-        # Check if there is a commit message
-        if [ -n "${{ github.event.head_commit.message }}" ]; then
-          # Extract the first line of the commit message
-          description=$(git log -1 --pretty=%B | head -n 1)
-        else
+        # Check if there is a commit message using git log
+        description=$(git log -1 --pretty=%B 2>/dev/null | head -n 1)
+        if [ -z "$description" ]; then
           # Default description if no commit message is available
           description="Artefacts Github Action"
         fi
